@@ -1,5 +1,5 @@
 import { SignedIn, SignedOut, useUser } from '@clerk/clerk-expo';
-import { Link } from 'expo-router';
+import { Link, router } from 'expo-router';
 import * as Location from 'expo-location';
 import { FlatList, Text, View, Image, ActivityIndicator, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -144,7 +144,11 @@ const Home = () => {
         })();
     }, []);
 
-    const handleDestinationPress = () => {};
+    const handleDestinationPress = (location: { latitude: number; longitude: number; address: string }) => {
+        setDestinationLocation(location);
+
+        router.push('/(root)/find-ride');
+    };
 
     return (
         <SafeAreaView className="bg-general-500">
