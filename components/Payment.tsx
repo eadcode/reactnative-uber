@@ -1,6 +1,6 @@
 import { Alert, Text, View, Image } from 'react-native';
-import { presentPaymentSheet, useStripe } from '@stripe/stripe-react-native';
-import { useEffect, useState } from 'react';
+import { useStripe } from '@stripe/stripe-react-native';
+import { useState } from 'react';
 import { useAuth } from '@clerk/clerk-expo';
 import { useLocationStore } from '@/store';
 import CustomButton from '@/components/CustomButton';
@@ -53,43 +53,44 @@ const Payment = ({ fullName, email, amount, driverId, rideTime }: PaymentProps) 
                     });
 
                     if (paymentIntent.client_secret) {
-                        // const { result } = await fetchAPI('/(api)/(stripe)/pay', {
-                        //     method: 'POST',
-                        //     headers: {
-                        //         'Content-Type': 'application/json',
-                        //     },
-                        //     body: JSON.stringify({
-                        //         payment_method_id: paymentMethod.id,
-                        //         payment_intent_id: paymentIntent.id,
-                        //         customer_id: customer,
-                        //         client_secret: paymentIntent.client_secret,
-                        //     }),
-                        // });
-                        // if (result.client_secret) {
-                        //     await fetchAPI('/(api)/ride/create', {
-                        //         method: 'POST',
-                        //         headers: {
-                        //             'Content-Type': 'application/json',
-                        //         },
-                        //         body: JSON.stringify({
-                        //             origin_address: userAddress,
-                        //             destination_address: destinationAddress,
-                        //             origin_latitude: userLatitude,
-                        //             origin_longitude: userLongitude,
-                        //             destination_latitude: destinationLatitude,
-                        //             destination_longitude: destinationLongitude,
-                        //             ride_time: rideTime.toFixed(0),
-                        //             fare_price: parseInt(amount) * 100,
-                        //             payment_status: 'paid',
-                        //             driver_id: driverId,
-                        //             user_id: userId,
-                        //         }),
-                        //     });
-                        //
-                        //     intentCreationCallback({
-                        //         clientSecret: result.client_secret,
-                        //     });
-                        // }
+                        const { result } = await fetchAPI('/(api)/(stripe)/pay', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({
+                                payment_method_id: paymentMethod.id,
+                                payment_intent_id: paymentIntent.id,
+                                customer_id: customer,
+                                client_secret: paymentIntent.client_secret,
+                            }),
+                        });
+
+                        if (result.client_secret) {
+                            await fetchAPI('/(api)/ride/create', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                },
+                                body: JSON.stringify({
+                                    origin_address: userAddress,
+                                    destination_address: destinationAddress,
+                                    origin_latitude: userLatitude,
+                                    origin_longitude: userLongitude,
+                                    destination_latitude: destinationLatitude,
+                                    destination_longitude: destinationLongitude,
+                                    ride_time: rideTime.toFixed(0),
+                                    fare_price: parseInt(amount) * 100,
+                                    payment_status: 'paid',
+                                    driver_id: driverId,
+                                    user_id: userId,
+                                }),
+                            });
+
+                            intentCreationCallback({
+                                clientSecret: result.client_secret,
+                            });
+                        }
                     }
                 },
             },

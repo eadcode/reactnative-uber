@@ -51,4 +51,4 @@ Join our community of developers creating universal apps.
 
 npx expo start -c
 
-4:07:10
+4:25:45

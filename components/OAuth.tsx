@@ -1,11 +1,24 @@
 import { router } from 'expo-router';
 import { Alert, Image, Text, View } from 'react-native';
+import { useOAuth } from '@clerk/clerk-expo';
 
-import CustomButton from '@/components/CustomButton';
 import { icons } from '@/constants';
+import { googleOAuth } from '@/lib/auth';
+import CustomButton from '@/components/CustomButton';
 
 const OAuth = () => {
-    const handleGoogleSignIn = async () => {};
+    const { startOAuthFlow } = useOAuth({ strategy: 'oauth_google' });
+
+    const handleGoogleSignIn = async () => {
+        const result = await googleOAuth(startOAuthFlow);
+
+        if (result.code === 'session_exists') {
+            Alert.alert('Success', 'Session exists. Redirecting to home screen.');
+            router.replace('/(root)/(tabs)/home');
+        }
+
+        Alert.alert(result.success ? 'Success' : 'Error', result.message);
+    };
 
     return (
         <View>
